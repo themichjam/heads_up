@@ -1,0 +1,87 @@
+---
+title: "HeadsUp RCT Analysis"
+author: "Michelle K Jamieson"
+date: "2022-09-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) # for data manipulation and visualization
+library(here) # for easier file paths
+library(skimr) # for summarizing data
+library(gtsummary) # for creating tables
+library(DataExplorer) # for automated data exploration
+library(ggpubr) # for enhanced ggplot objects
+library(patchwork) # for arranging ggplots
+library(kableExtra) # for enhancing knitr tables
+library(rstatix) # for easy statistical tests
+```
+
+# Introduction
+Provide a brief introduction to the HeadsUp RCT, its objectives, and the significance of the analysis.
+
+# Load Packages
+Load all required packages upfront for ease of readability and organization. Packages are loaded in the setup chunk to keep the document clean and organized.
+
+# Read in Data
+Load the dataset using appropriate methods, ensuring confidentiality and data integrity.
+
+```{r}
+# Assuming the data file is in the same directory as the Rmd file.
+file_path <- here("HeadsUpStage3_DATA_All_Batches_T0_T1_T2_T3_Oct.xlsx")
+headsup_data <- read_excel(file_path, password = "HuPs3@OctC1C2T0123")
+```
+
+# Data Exploration
+Use skimr and DataExplorer to get an initial understanding of the dataset's structure and contents.
+
+```{r}
+skim(headsup_data)
+plot_missing(headsup_data)
+```
+
+# Data Preprocessing
+Clean and preprocess the data, handling categorical variables, missing values, and any transformations required.
+
+```{r}
+# Sample preprocessing for 'living_arrangements'
+headsup_data <- headsup_data %>%
+  mutate(
+    living_arrangements = recode(living_arrangements, 
+                                 "Alone" = "Alone",
+                                 "Alone (supported living)" = "Alone",
+                                 "Living in group accommodation" = "Alone",
+                                 # Add more as needed
+                                 ),
+    # Add more variables as needed
+  )
+```
+
+# Data Analysis
+Perform descriptive statistics, hypothesis testing, and any model fitting as per the objectives of the RCT.
+
+```{r}
+# Example: Descriptive statistics for 'age' by 'group'
+headsup_data %>%
+  group_by(group) %>%
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    sd_age = sd(age, na.rm = TRUE)
+  )
+```
+
+# Data Visualization
+Visualize the data to uncover patterns, trends, and insights.
+
+```{r}
+# Example: Age distribution by group
+headsup_data %>%
+  ggplot(aes(x = age, fill = group)) +
+  geom_histogram(alpha = 0.6, position = "identity") +
+  theme_minimal() +
+  labs(title = "Age Distribution by Group", x = "Age", y = "Count")
+```
+
+# Discussion
+Discuss the findings, their implications, and any recommendations or conclusions that can be drawn from the analysis.
